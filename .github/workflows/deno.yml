@@ -28,13 +28,14 @@ jobs:
 
       - name: Deploy to EC2 using SSM
         run: |
-          aws ssm send-command \
-            --document-name "AWS-RunShellScript" \
-            --targets "Key=tag:Name,Values=app-server" \
-            --parameters 'commands=[
-              "cd /home/ec2-user",
-              "rm -rf app",
-              "unzip app.zip",
-              "pkill node || true",
-              "nohup node app/app.js > output.log 2>&1 &"
-            ]'
+         aws ssm send-command \
+         --document-name "AWS-RunShellScript" \
+         --targets "Key=tag:Name,Values=app-server" \
+         --parameters 'commands=[
+         "cd /home/ec2-user",
+         "rm -rf app",
+         "mkdir app",
+        "echo \"const http = require(\"http\"); http.createServer((req,res)=>{res.end(\"Hello from CI/CD 🚀\");}).listen(3000);\" > app/app.js",
+        "pkill node || true",
+        "nohup node app/app.js > output.log 2>&1 &"
+      ]'
