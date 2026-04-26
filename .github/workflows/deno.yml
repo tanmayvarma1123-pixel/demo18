@@ -13,16 +13,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Configure AWS
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Deploy using SSM (simple)
+      - name: Test SSM Connection
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
             --targets "Key=tag:Name,Values=app-server" \
-            --parameters commands="cd /home/ec2-user && echo 'Hello DevOps 🚀' > test.txt"
+            --comment "SSM Test" \
+            --parameters commands="echo SSM_WORKING" \
+            --region us-east-1
