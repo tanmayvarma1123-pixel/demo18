@@ -27,4 +27,3 @@ jobs:
             --targets "Key=tag:Name,Values=app-server" \
             --comment "SSM Test" \
             --parameters commands="echo SSM_WORKING" \
-            --region us-east-1
