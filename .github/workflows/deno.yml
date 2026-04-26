@@ -5,9 +5,6 @@ on:
     branches:
       - main
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,29 +13,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install zip
-        run: sudo apt-get update && sudo apt-get install -y zip unzip
-
-      - name: Zip Application
-        run: zip -r app.zip app/
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Deploy to EC2 using SSM
+      - name: Deploy using SSM (simple)
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
             --targets "Key=tag:Name,Values=app-server" \
-            --parameters 'commands=[
-              "cd /home/ec2-user",
-              "rm -rf app",
-              "mkdir app",
-              "printf \"const http = require('http'); http.createServer((req,res)=>{res.end('Hello from CI/CD ');}).listen(3000);\" > app/app.js",
-              "pkill node || true",
-              "nohup node app/app.js > output.log 2>&1 &"
-            ]'
+            --parameters commands="cd /home/ec2-user && echo 'Hello DevOps 🚀' > test.txt"
